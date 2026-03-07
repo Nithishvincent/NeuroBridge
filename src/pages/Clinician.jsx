@@ -64,12 +64,42 @@ function RiskDonut() {
     return <Doughnut data={data} options={options} />
 }
 
+/* Working Alliance Transformer (WAT) — Report Section: Computational Modeling */
+function WATChart({ patientRisk }) {
+    const baseScore = patientRisk === 'high' ? 48 : patientRisk === 'moderate' ? 64 : 81
+    const watScores = Array.from({ length: 8 }, (_, i) => {
+        const trend = patientRisk === 'high' ? -2.5 : patientRisk === 'moderate' ? 0.8 : 1.2
+        return Math.max(20, Math.min(100, baseScore + i * trend + (Math.random() - 0.5) * 8))
+    }).map(v => Math.round(v))
+    const labels = ['Wk1', 'Wk2', 'Wk3', 'Wk4', 'Wk5', 'Wk6', 'Wk7', 'Wk8']
+    return <Line
+        data={{
+            labels, datasets: [{
+                label: 'WAT Alliance Score',
+                data: watScores,
+                borderColor: patientRisk === 'high' ? '#f43f5e' : patientRisk === 'moderate' ? '#f59e0b' : '#10b981',
+                backgroundColor: patientRisk === 'high' ? 'rgba(244,63,94,0.08)' : patientRisk === 'moderate' ? 'rgba(245,158,11,0.08)' : 'rgba(16,185,129,0.08)',
+                fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#fff'
+            }]
+        }}
+        options={{
+            responsive: true,
+            plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(10,14,26,0.9)', titleColor: '#c8d3f5', bodyColor: '#8892b0' } },
+            scales: {
+                y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892b0' } },
+                x: { grid: { display: false }, ticks: { color: '#8892b0' } }
+            }
+        }}
+    />
+}
+
+
 export default function Clinician() {
     const [selected, setSelected] = useState(PATIENTS[0])
     const [search, setSearch] = useState('')
+    const [soapDraft, setSoapDraft] = useState(false)
     const rc = riskConfig(selected.risk)
     const alertCount = PATIENTS.filter(p => p.risk === 'high').length
-
     const filtered = PATIENTS.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
 
     return (
@@ -151,19 +181,20 @@ export default function Clinician() {
                         </div>
                     </div>
 
-                    {/* Risk bar */}
+                    {/* SHAP Risk bar */}
                     <div className="risk-bar-section">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.625rem' }}>
-                            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.9rem' }}>Dropout Risk Probability</div>
+                            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.9rem' }}>SHAP Dropout Risk Score</div>
                             <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 900, color: rc.color }}>{selected.riskScore}%</div>
                         </div>
                         <div className="progress-bar-container" style={{ height: 12 }}>
                             <div className={`progress-bar-fill ${selected.risk === 'high' ? 'fill-rose' : selected.risk === 'moderate' ? 'fill-amber' : 'fill-green'}`} style={{ width: `${selected.riskScore}%` }} />
                         </div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-400)', margin: '0.5rem 0 0.375rem' }}>SHAP Feature Attribution (Top Drivers):</div>
                         <div className="xai-chips">
-                            {selected.risk === 'high' && <><span className="xai-chip xai-red">📉 Mood declining 5 days</span><span className="xai-chip xai-red">📵 3-day inactivity</span><span className="xai-chip xai-red">❌ Missed last session</span></>}
-                            {selected.risk === 'moderate' && <><span className="xai-chip xai-amber">📊 Mood volatility detected</span><span className="xai-chip xai-amber">⏱ Response latency ↑</span></>}
-                            {selected.risk === 'low' && <><span className="xai-chip xai-green">✅ Consistent check-ins</span><span className="xai-chip xai-green">📈 Mood trending up</span></>}
+                            {selected.risk === 'high' && <><span className="xai-chip xai-red">📉 SHAP: Mood slope ↑</span><span className="xai-chip xai-red">📵 SHAP: Inactivity 3d</span><span className="xai-chip xai-red">❌ SHAP: Missed session</span></>}
+                            {selected.risk === 'moderate' && <><span className="xai-chip xai-amber">📊 SHAP: Mood volatility</span><span className="xai-chip xai-amber">⏱ SHAP: Response latency</span></>}
+                            {selected.risk === 'low' && <><span className="xai-chip xai-green">✅ SHAP: Daily check-ins</span><span className="xai-chip xai-green">📈 SHAP: Mood trending up</span></>}
                         </div>
                     </div>
 
@@ -181,7 +212,7 @@ export default function Clinician() {
 
                     {/* Heatmap + AI insights */}
                     <div className="bottom-row">
-                        <div className="chart-card heatmap-card">
+                        <div className="chart-card">
                             <div className="chart-card-title">28-Day Mood Heatmap</div>
                             <div className="heatmap-legend">
                                 <div className="heatmap-legend-item"><span style={{ background: '#10b981' }} /> Good (8–10)</div>
@@ -191,40 +222,73 @@ export default function Clinician() {
                             </div>
                             <MoodHeatmap data={[...selected.mood, ...selected.mood, ...selected.mood, ...selected.mood.slice(0, 7)]} />
                         </div>
-                        <div className="chart-card ai-insights-card">
-                            <div className="chart-card-title">🧠 AI Clinical Insights</div>
-                            {selected.risk === 'high' && (
-                                <div className="ai-insight-block high">
-                                    <strong>⚠️ Urgent: High Dropout Risk</strong>
-                                    <p>{selected.name} shows a pattern of declining mood scores, extended inactivity, and a missed session — classic precursors to treatment abandonment. Immediate outreach recommended within 24 hours.</p>
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                                        <button className="btn btn-sm" style={{ background: 'rgba(244,63,94,0.15)', border: '1px solid rgba(244,63,94,0.3)', color: 'var(--rose)' }}>📞 Schedule Call</button>
-                                        <button className="btn btn-sm btn-ghost">📧 Send Nudge</button>
+                        <div className="chart-card">
+                            <div className="chart-card-title">🤝 WAT Alliance Trajectory <span className="badge badge-cyan" style={{ fontSize: '0.62rem', marginLeft: '0.35rem' }}>Working Alliance Transformer</span></div>
+                            <WATChart patientRisk={selected.risk} />
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-400)', marginTop: '0.625rem', lineHeight: 1.5 }}>
+                                {selected.risk === 'high' ? '⚠️ Alliance degrading — rupture detected. Address in next session.' : selected.risk === 'moderate' ? '⚡ Alliance stable but monitor. Consider rupture repair strategies.' : '✅ Strong collaborative bond. WAI correlation r > 0.70.'}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* AI Insights */}
+                    <div className="chart-card" style={{ marginTop: '1.25rem' }}>
+                        <div className="chart-card-title">🧠 AI Clinical Insights + CareOps SOAP Draft</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div>
+                                {selected.risk === 'high' && (
+                                    <div className="ai-insight-block high">
+                                        <strong>⚠️ Urgent: High Dropout Risk</strong>
+                                        <p>{selected.name} shows declining mood, extended inactivity, and a missed session. LSTM ensemble: AUC 0.89. Immediate outreach recommended within 24 hours.</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                                            <button className="btn btn-sm" style={{ background: 'rgba(244,63,94,0.15)', border: '1px solid rgba(244,63,94,0.3)', color: 'var(--rose)' }}>📞 Schedule Call</button>
+                                            <button className="btn btn-sm btn-ghost">📧 Send Nudge</button>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {selected.risk === 'moderate' && (
-                                <div className="ai-insight-block moderate">
-                                    <strong>⚡ Monitor Closely</strong>
-                                    <p>{selected.name} is showing mood variability and increased response latency. Engagement is trending slightly downward. A proactive check-in is recommended before the next scheduled session.</p>
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                                        <button className="btn btn-sm btn-secondary">📲 Send Motivational Nudge</button>
+                                )}
+                                {selected.risk === 'moderate' && (
+                                    <div className="ai-insight-block moderate">
+                                        <strong>⚡ Monitor Closely</strong>
+                                        <p>{selected.name} shows mood volatility and increased response latency. Proactive check-in recommended before next session. Random Forest confidence: 74%.</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+                                            <button className="btn btn-sm btn-secondary">📲 Send Motivational Nudge</button>
+                                        </div>
                                     </div>
+                                )}
+                                {selected.risk === 'low' && (
+                                    <div className="ai-insight-block low">
+                                        <strong>✅ Progressing Well</strong>
+                                        <p>{selected.name} shows excellent adherence, consistent check-ins, and improving mood. Maintenance interventions sufficient. XGBoost confidence: 91%.</p>
+                                    </div>
+                                )}
+                                <div className="ai-session-notes">
+                                    <div className="chart-card-title" style={{ marginTop: '0.875rem' }}>📋 Session Prep</div>
+                                    <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: 'var(--text-300)', lineHeight: 1.7 }}>
+                                        <li>Avg. mood: <strong style={{ color: 'var(--text-100)' }}>{(selected.mood.reduce((a, b) => a + b, 0) / selected.mood.length).toFixed(1)}/10</strong></li>
+                                        <li>AI topics: <strong style={{ color: 'var(--text-100)' }}>{selected.risk === 'high' ? 'Motivation, isolation' : 'Stress, sleep quality'}</strong></li>
+                                        <li>Last active: {selected.lastActive}</li>
+                                    </ul>
                                 </div>
-                            )}
-                            {selected.risk === 'low' && (
-                                <div className="ai-insight-block low">
-                                    <strong>✅ Progressing Well</strong>
-                                    <p>{selected.name} demonstrates excellent session adherence, consistent daily check-ins, and improving mood scores. Maintenance interventions are sufficient — no escalation needed.</p>
-                                </div>
-                            )}
-                            <div className="ai-session-notes">
-                                <div className="chart-card-title" style={{ marginTop: '1rem' }}>📋 Session Prep Notes</div>
-                                <ul style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: 'var(--text-300)', lineHeight: 1.7 }}>
-                                    <li>Avg. mood this week: <strong style={{ color: 'var(--text-100)' }}>{(selected.mood.reduce((a, b) => a + b, 0) / selected.mood.length).toFixed(1)}/10</strong></li>
-                                    <li>Topics flagged by AI: <strong style={{ color: 'var(--text-100)' }}>{selected.risk === 'high' ? 'Motivation, isolation' : 'Stress management, sleep'}</strong></li>
-                                    <li>Last engagement: {selected.lastActive}</li>
-                                </ul>
+                            </div>
+                            {/* CareOps SOAP auto-draft — Report: CareOps Automation */}
+                            <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1rem' }}>
+                                <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.625rem', color: 'var(--cyan)' }}>AI-Drafted SOAP Note <span className="badge badge-cyan" style={{ fontSize: '0.62rem' }}>CareOps</span></div>
+                                {soapDraft ? (
+                                    <div style={{ fontSize: '0.78rem', color: 'var(--text-300)', lineHeight: 1.7 }}>
+                                        <strong style={{ color: 'var(--text-100)' }}>S:</strong> Patient reports {selected.risk === 'high' ? 'significant withdrawal and low motivation. Expressed hopelessness regarding progress.' : selected.risk === 'moderate' ? 'moderate anxiety and disrupted sleep. Some positive engagement reported.' : 'improved mood and consistent engagement. Positive progress noted.'}<br />
+                                        <strong style={{ color: 'var(--text-100)' }}>O:</strong> PHQ-9 estimated {selected.riskScore > 60 ? '≥14 (moderate-severe)' : selected.riskScore > 30 ? '8-13 (mild-moderate)' : '<7 (minimal)'}. Engagement {(selected.engagement.reduce((a, b) => a + b, 0) / 7).toFixed(0)}% avg. WAT score {selected.risk === 'high' ? '48/100' : selected.risk === 'moderate' ? '64/100' : '81/100'}.<br />
+                                        <strong style={{ color: 'var(--text-100)' }}>A:</strong> {selected.diagnosis}. Dropout risk: {selected.risk} ({selected.riskScore}%). Alliance {selected.risk === 'high' ? 'rupture' : 'stable'}.<br />
+                                        <strong style={{ color: 'var(--text-100)' }}>P:</strong> {selected.risk === 'high' ? 'Increase session frequency. Crisis protocol review.' : 'Continue CBT protocol. Behavioral activation homework.'}
+                                    </div>
+                                ) : (
+                                    <div style={{ fontSize: '0.78rem', color: 'var(--text-400)', lineHeight: 1.7 }}>
+                                        Auto-generate a SOAP note from inter-session chatbot data &amp; voice biomarkers.
+                                    </div>
+                                )}
+                                <button className="btn btn-secondary btn-sm" style={{ marginTop: '0.75rem' }} onClick={() => setSoapDraft(!soapDraft)}>
+                                    {soapDraft ? 'Hide Draft' : '✨ Generate SOAP Draft'}
+                                </button>
+                                {soapDraft && <div style={{ fontSize: '0.7rem', color: 'var(--text-400)', marginTop: '0.4rem' }}>⚠️ Requires clinician review before use.</div>}
                             </div>
                         </div>
                     </div>

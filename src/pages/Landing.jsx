@@ -63,7 +63,7 @@ export default function Landing() {
                 <div className="hero-content">
                     <div className="hero-eyebrow">
                         <span className="eyebrow-dot" />
-                        AI-Powered Mental Health Retention
+                        AI-Powered Mental Health Retention · Built for India
                     </div>
                     <h1 className="hero-headline">
                         <span className="gradient-text">Predict. Prevent.</span>
@@ -71,7 +71,7 @@ export default function Landing() {
                     </h1>
                     <p className="hero-subheadline">
                         NeuroBridge bridges the gap between therapy sessions — using AI to detect dropout risk
-                        before it happens and keeping patients engaged on their path to recovery.
+                        before it happens, supporting patients across India's diverse languages and cultures.
                     </p>
                     <div className="hero-actions">
                         <button className="btn btn-primary btn-lg" onClick={() => navigate('/patient')}>
@@ -82,10 +82,10 @@ export default function Landing() {
                         </button>
                     </div>
                     <div className="hero-trust">
-                        <div className="hero-trust-item"><Shield size={15} />HIPAA-Aligned Privacy</div>
+                        <div className="hero-trust-item"><Shield size={15} />DISHA Act Aligned</div>
                         <div className="hero-trust-item"><Brain size={15} />Evidence-Based CBT</div>
                         <div className="hero-trust-item"><Activity size={15} />24/7 AI Support</div>
-                        <div className="hero-trust-item"><Zap size={15} />Real-Time Risk Detection</div>
+                        <div className="hero-trust-item"><Zap size={15} />7 Indian Languages</div>
                     </div>
                 </div>
 
@@ -139,10 +139,10 @@ export default function Landing() {
             {/* ── STATS STRIP ──────────────────────────────────── */}
             <section className="stats-strip" id="stats-anchor">
                 <div className="stats-grid">
-                    <StatItem target={50} suffix="%" label="of therapy patients drop out prematurely" color="var(--rose)" />
-                    <StatItem target={3.2} suffix="×" label="higher retention with AI check-ins" color="var(--green)" decimals={1} />
-                    <StatItem target={68} suffix="%" label="reduction in predicted dropout risk" color="var(--cyan)" />
-                    <StatItem target={24} suffix="/7" label="AI companion available anytime" color="var(--primary-light)" />
+                    <StatItem target={197} suffix="M" label="Indians affected by MDD or anxiety (NMHP 2023)" color="var(--rose)" />
+                    <StatItem target={83} suffix="%" label="mental health treatment gap across India" color="var(--amber)" />
+                    <StatItem target={50} suffix="%" label="of patients drop out before remission" color="var(--purple)" />
+                    <StatItem target={0.75} suffix=" / lakh" label="psychiatrists in India vs 3.1 global average" color="var(--cyan)" decimals={2} />
                 </div>
             </section>
 
@@ -156,9 +156,9 @@ export default function Landing() {
                     </div>
                     <div className="problem-cards reveal">
                         {[
-                            { icon: '🚪', color: 'var(--rose)', bg: 'rgba(244,63,94,0.12)', title: 'Premature Dropout', desc: '1 in 2 patients discontinues therapy before achieving clinical remission, often without informing their provider.', stat: '50% dropout rate globally' },
-                            { icon: '⏳', color: 'var(--amber)', bg: 'rgba(245,158,11,0.12)', title: 'The Session Gap', desc: 'Days or weeks between sessions create unmonitored windows where motivation collapses and symptoms worsen undetected.', stat: '14–21 day gaps on average' },
-                            { icon: '🔇', color: 'var(--purple)', bg: 'rgba(168,85,247,0.12)', title: 'Silent Deterioration', desc: 'Clinicians have no visibility between sessions. Disengagement signals go unrecognized until it is too late to intervene.', stat: '73% of relapses go undetected early' },
+                            { icon: '🇮🇳', color: 'var(--rose)', bg: 'rgba(244,63,94,0.12)', title: "India's Mental Health Gap", desc: '197 million Indians live with depression or anxiety, yet 83% receive no treatment. With only 0.75 psychiatrists per lakh population — versus 3.1 globally — sustained care is out of reach for most (NMHP 2023).', stat: '83% treatment gap · NMHP 2023' },
+                            { icon: '⏳', color: 'var(--amber)', bg: 'rgba(245,158,11,0.12)', title: 'The Session Gap', desc: 'Weeks between sessions create unmonitored windows where motivation collapses. Cultural stigma in India makes re-engagement especially difficult once a patient steps away.', stat: '14–21 day unmonitored gaps' },
+                            { icon: '🗣️', color: 'var(--purple)', bg: 'rgba(168,85,247,0.12)', title: 'Language Barriers in Care', desc: "India has 22 official languages, yet most mental health apps operate in English only. Patients struggle to express distress in clinical settings that don't reflect their mother tongue.", stat: '>90% of apps English-only' },
                         ].map(c => (
                             <div key={c.title} className="problem-card">
                                 <div className="problem-icon" style={{ background: c.bg }}>
@@ -317,9 +317,9 @@ export default function Landing() {
                         {[
                             { icon: '🔐', title: 'End-to-End Encryption', desc: 'All patient data is encrypted at rest and in transit using AES-256. Zero data sold to third parties.' },
                             { icon: '⚖️', title: 'Bias Mitigation', desc: 'Models are tested across demographic groups and retrained with fairness constraints to prevent discriminatory outcomes.' },
-                            { icon: '🚨', title: 'Crisis Escalation', desc: 'Keyword detection algorithms identify suicidal ideation and immediately surface emergency resources and notify clinicians.' },
+                            { icon: '🚨', title: 'Crisis Escalation', desc: 'Detects suicidal ideation in 7 Indian languages. Instantly surfaces iCall (9152987821), Vandrevala Foundation, and NIMHANS helplines. Clinician notified.' },
                             { icon: '🧑‍⚕️', title: 'Human-in-the-Loop', desc: 'Every AI recommendation is reviewable and overrideable by clinicians. The system augments, never replaces, clinical judgment.' },
-                            { icon: '📋', title: 'HIPAA Alignment', desc: 'Architecture follows HIPAA-aligned guidelines for health data handling with full audit logging and access controls.' },
+                            { icon: '📋', title: 'DISHA Act Aligned', desc: "Architecture follows India's Digital Information in Healthcare Security Act (DISHA) guidelines, with full consent management and audit logging." },
                             { icon: '🎯', title: 'Augmentation First', desc: 'NeuroBridge is a bridge between sessions — patients are always encouraged to attend and maintain professional care.' },
                         ].map(e => (
                             <div key={e.title} className="ethics-card card">

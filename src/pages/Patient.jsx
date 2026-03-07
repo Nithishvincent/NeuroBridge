@@ -6,7 +6,15 @@ import './Patient.css'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
-/* ── Chatbot Data ─────────────────────────────────────────── */
+/* ── Localized Greetings (India: 7 languages) ─────────────── */
+const LANG_GREETINGS = {
+    EN: "Hi! I'm your NeuroBridge companion. I'm here to support you between therapy sessions. How are you feeling today? 😊",
+    HI: "नमस्ते! मैं आपका NeuroBridge साथी हूँ। आज आप कैसा महसूस कर रहे हैं? 😊",
+    TA: "வணக்கம்! நான் உங்கள் NeuroBridge துணை. இன்று நீங்கள் எப்படி உணர்கிறீர்கள்? 😊",
+    TE: "నమస్కారం! నేను మీ NeuroBridge సహాయకుడిని. ఈరోజు మీరు ఎలా అనుభవిస్తున్నారు? 😊",
+    BN: "নমস্কার! আমি আপনার NeuroBridge সঙ্গী। আজ আপনি কেমন অনুভব করছেন? 😊",
+}
+
 const CONVERSATIONS = {
     start: {
         message: "Hi! I'm your NeuroBridge companion. I'm here to support you between therapy sessions. How are you feeling today? 😊",
@@ -178,13 +186,12 @@ function RiskGauge({ risk }) {
     )
 }
 
-/* ── Voice Biomarker Check-In ─────────────────────────────── */
-const VOICE_STAGES = ['ready', 'recording', 'analyzing', 'done']
+/* ── Vocal Biomarker Check-In (Report: Section 2) ──────────── */
 const VOICE_FEATURES = [
-    { label: 'Pitch Variability', low: 35, high: 78, desc: 'Low monotony → positive affect' },
-    { label: 'Speech Rate', low: 42, high: 88, desc: 'Within healthy range' },
-    { label: 'Vocal Energy', low: 61, high: 91, desc: 'Strong engagement signal' },
-    { label: 'Pause Frequency', low: 55, high: 70, desc: 'Mild cognitive load detected' },
+    { label: 'Pitch Variability', low: 35, high: 78 },
+    { label: 'Speech Rate', low: 42, high: 88 },
+    { label: 'Vocal Energy', low: 61, high: 91 },
+    { label: 'Pause Frequency', low: 55, high: 70 },
 ]
 
 function VoiceBiomarkerCard({ onRiskUpdate }) {
@@ -198,7 +205,7 @@ function VoiceBiomarkerCard({ onRiskUpdate }) {
         setProgress(0)
         let p = 0
         intervalRef.current = setInterval(() => {
-            p += 100 / 20  // 20s recording simulated in 3s
+            p += 5
             setProgress(Math.min(p, 100))
             if (p >= 100) {
                 clearInterval(intervalRef.current)
@@ -224,15 +231,13 @@ function VoiceBiomarkerCard({ onRiskUpdate }) {
         <div className="voice-card right-panel-card">
             <div className="right-panel-card-title">🎙️ Vocal Biomarker Check-In</div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-400)', marginBottom: '0.875rem', lineHeight: 1.5 }}>
-                20-sec voice sample analyzed for pitch variability, speech rate &amp; acoustic markers of affect.
+                20-sec voice sample · EMD + Gaussian kernel analysis of pitch, speech rate &amp; prosody.
             </div>
-
             {stage === 'ready' && (
-                <button className="btn btn-secondary w-full" style={{ justifyContent: 'center', gap: '0.5rem' }} onClick={startRecording}>
+                <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }} onClick={startRecording}>
                     <Mic size={16} color="var(--cyan)" /> Start Voice Check-In
                 </button>
             )}
-
             {stage === 'recording' && (
                 <div className="voice-recording-ui">
                     <div className="voice-mic-pulse"><MicOff size={22} color="var(--rose)" /></div>
@@ -240,17 +245,15 @@ function VoiceBiomarkerCard({ onRiskUpdate }) {
                     <div className="progress-bar-container" style={{ marginTop: '0.5rem' }}>
                         <div className="progress-bar-fill fill-rose" style={{ width: `${progress}%` }} />
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-400)', marginTop: '0.4rem' }}>Capturing paralinguistic features</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-400)', marginTop: '0.4rem' }}>Capturing paralinguistic features via EMD</div>
                 </div>
             )}
-
             {stage === 'analyzing' && (
                 <div className="voice-analyzing">
-                    <Activity size={22} color="var(--cyan)" style={{ animation: 'pulse-dot 1s infinite' }} />
-                    <span style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>Applying EMD + Gaussian kernel analysis...</span>
+                    <Activity size={20} color="var(--cyan)" />
+                    <span style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>Applying Gaussian kernel analysis...</span>
                 </div>
             )}
-
             {stage === 'done' && results && (
                 <div className="voice-results">
                     <div className="voice-result-score" style={{ color: results.color }}>
@@ -258,7 +261,7 @@ function VoiceBiomarkerCard({ onRiskUpdate }) {
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-400)', marginLeft: '0.3rem' }}>/100</span>
                         <span className="badge" style={{ marginLeft: '0.5rem', background: results.color + '22', color: results.color, border: `1px solid ${results.color}44` }}>{results.severity}</span>
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-400)', marginBottom: '0.625rem' }}>Depression Severity Index (Voice)</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-400)', marginBottom: '0.75rem' }}>Depression Severity Index (Voice)</div>
                     {results.features.map(f => (
                         <div key={f.label} style={{ marginBottom: '0.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '0.2rem' }}>
@@ -270,30 +273,28 @@ function VoiceBiomarkerCard({ onRiskUpdate }) {
                             </div>
                         </div>
                     ))}
-                    <button className="btn btn-ghost btn-sm w-full" style={{ marginTop: '0.5rem', justifyContent: 'center' }} onClick={reset}>Redo Check-In</button>
+                    <button className="btn btn-ghost btn-sm" style={{ marginTop: '0.5rem', width: '100%', justifyContent: 'center' }} onClick={reset}>Redo Check-In</button>
                 </div>
             )}
         </div>
     )
 }
 
-/* ── Patient-in-the-Loop Panel ────────────────────────────── */
+/* ── Patient-in-the-Loop (Report: Passive Sensing) ───────── */
 const PITL_FLAGS = [
-    { day: 'Tue', flag: 'Inactivity spike', auto: 'Depressive relapse risk ↑', icon: '⚠️' },
-    { day: 'Wed', flag: 'Disrupted sleep pattern', auto: 'Circadian disruption', icon: '😴' },
-    { day: 'Thu', flag: 'Low social contact', auto: 'Withdrawal signal', icon: '📵' },
+    { day: 'Tue', flag: 'Inactivity spike detected', auto: 'Depressive relapse risk ↑', icon: '⚠️' },
+    { day: 'Wed', flag: 'Disrupted sleep pattern', auto: 'Circadian disruption signal', icon: '😴' },
+    { day: 'Thu', flag: 'Low social contact', auto: 'Behavioural withdrawal', icon: '📵' },
 ]
+
 function PatientInTheLoopPanel() {
-    const [annotations, setAnnotations] = useState({ Tue: '', Wed: '', Thu: '' })
+    const [notes, setNotes] = useState({ Tue: '', Wed: '', Thu: '' })
     const [saved, setSaved] = useState({})
-    const save = (day) => {
-        setSaved(s => ({ ...s, [day]: annotations[day] }))
-    }
     return (
         <div className="right-panel-card">
             <div className="right-panel-card-title">🔍 Your Behavioral Data <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>Patient-in-the-Loop</span></div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-400)', marginBottom: '0.875rem', lineHeight: 1.5 }}>
-                AI flagged these anomalies this week. You can contextualise them to improve your model's accuracy.
+                AI flagged these patterns. Contextualise them to recalibrate your personal model.
             </div>
             {PITL_FLAGS.map(f => (
                 <div key={f.day} className="pitl-item">
@@ -301,20 +302,17 @@ function PatientInTheLoopPanel() {
                         <span className="pitl-icon">{f.icon}</span>
                         <div style={{ flex: 1 }}>
                             <div style={{ fontSize: '0.78rem', fontWeight: 600 }}>{f.day}: {f.flag}</div>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-400)' }}>AI inference: {f.auto}</div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-400)' }}>AI: {f.auto}</div>
                         </div>
                     </div>
                     {saved[f.day] ? (
-                        <div className="pitl-saved">✅ Your note: <em>{saved[f.day]}</em></div>
+                        <div className="pitl-saved">✅ <em>{saved[f.day]}</em></div>
                     ) : (
                         <div className="pitl-annotate">
-                            <input
-                                className="pitl-input"
-                                placeholder="Add context (e.g. had the flu)..."
-                                value={annotations[f.day] || ''}
-                                onChange={e => setAnnotations(a => ({ ...a, [f.day]: e.target.value }))}
-                            />
-                            <button className="btn btn-ghost btn-sm" onClick={() => save(f.day)}>Save</button>
+                            <input className="pitl-input" placeholder="Add context (e.g. had the flu)..."
+                                value={notes[f.day] || ''}
+                                onChange={e => setNotes(n => ({ ...n, [f.day]: e.target.value }))} />
+                            <button className="btn btn-ghost btn-sm" onClick={() => setSaved(s => ({ ...s, [f.day]: notes[f.day] }))}>Save</button>
                         </div>
                     )}
                 </div>
@@ -323,7 +321,7 @@ function PatientInTheLoopPanel() {
     )
 }
 
-/* ── Implementation Intention Card ───────────────────────── */
+/* ── Implementation Intention (Report: Behavioural Econ) ───── */
 function ImplementationIntentionCard() {
     const [ifPart, setIfPart] = useState('')
     const [thenPart, setThenPart] = useState('')
@@ -336,11 +334,11 @@ function ImplementationIntentionCard() {
         <div className="right-panel-card">
             <div className="right-panel-card-title">🎯 Implementation Intention <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>Behavioural Econ</span></div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-400)', marginBottom: '0.75rem', lineHeight: 1.5 }}>
-                Set a concrete "if-then" plan to handle difficult moments before they arise.
+                Set a concrete "if-then" plan to handle difficult moments proactively.
             </div>
             {saved ? (
                 <div className="intention-saved">
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-200)', lineHeight: 1.6 }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-200)', lineHeight: 1.7 }}>
                         <strong style={{ color: 'var(--amber)' }}>IF</strong> {saved.if}<br />
                         <strong style={{ color: 'var(--green)' }}>THEN</strong> {saved.then}
                     </div>
@@ -349,15 +347,15 @@ function ImplementationIntentionCard() {
             ) : (
                 <>
                     <div className="intention-field">
-                        <label style={{ fontSize: '0.72rem', color: 'var(--amber)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>IF (trigger situation)</label>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--amber)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>IF (trigger)</label>
                         <input className="pitl-input" placeholder="e.g. I feel anxious before work..." value={ifPart} onChange={e => setIfPart(e.target.value)} />
                     </div>
                     <div className="intention-field">
-                        <label style={{ fontSize: '0.72rem', color: 'var(--green)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>THEN (coping action)</label>
+                        <label style={{ fontSize: '0.72rem', color: 'var(--green)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>THEN (action)</label>
                         <input className="pitl-input" placeholder="e.g. I will do box breathing for 2 min..." value={thenPart} onChange={e => setThenPart(e.target.value)} />
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                        <button className="btn btn-primary btn-sm" onClick={() => { if (ifPart && thenPart) setSaved({ if: ifPart, then: thenPart }) }}>Save Intention</button>
+                        <button className="btn btn-primary btn-sm" onClick={() => { if (ifPart && thenPart) setSaved({ if: ifPart, then: thenPart }) }}>Save Plan</button>
                         {examples.map((ex, i) => (
                             <button key={i} className="btn btn-ghost btn-sm" onClick={() => { setIfPart(ex.if); setThenPart(ex.then) }}>Example {i + 1}</button>
                         ))}
@@ -368,7 +366,7 @@ function ImplementationIntentionCard() {
     )
 }
 
-
+/* ── Main Component ───────────────────────────────────────── */
 export default function Patient() {
     const [messages, setMessages] = useState([{ role: 'ai', text: CONVERSATIONS.start.message, options: CONVERSATIONS.start.options, key: 'start' }])
     const [isTyping, setIsTyping] = useState(false)
@@ -382,8 +380,15 @@ export default function Patient() {
     const chatEndRef = useRef(null)
     const chatContainerRef = useRef(null)
 
+    const handleLanguageChange = (lang) => {
+        setLanguage(lang)
+        setMessages([{ role: 'ai', text: LANG_GREETINGS[lang] || LANG_GREETINGS.EN, options: CONVERSATIONS.start.options, key: 'start' }])
+    }
+
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+        }
     }, [messages, isTyping])
 
     const handleOption = (option) => {
@@ -426,7 +431,7 @@ export default function Patient() {
     }
 
     const moodEmojis = ['😞', '😕', '😐', '🙂', '😁']
-    const languages = ['EN', 'HI', 'TA', 'TE', 'BN']
+    const languages = ['EN', 'HI', 'TA', 'TE', 'BN', 'MR', 'ML']
 
     return (
         <div className="patient-page">
@@ -438,7 +443,7 @@ export default function Patient() {
             )}
 
             <div className="patient-layout">
-                {/* ── LEFT PANEL ─────────────────────────────── */}
+                {/* ── LEFT PANEL ──────────────────────────────────── */}
                 <aside className="patient-sidebar">
                     <div className="patient-profile">
                         <div className="patient-avatar">MR</div>
@@ -448,35 +453,34 @@ export default function Patient() {
                         </div>
                     </div>
 
-                    {/* Language selector — multilingual NLP from report */}
+                    {/* Multilingual NLP selector — Report: Cross-Lingual NLP */}
                     <div className="sidebar-card">
-                        <div className="sidebar-card-label"><Globe size={14} /> Language</div>
+                        <div className="sidebar-card-label"><Globe size={14} /> Language (CL-PDE NLP)</div>
                         <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
                             {languages.map(l => (
-                                <button key={l} onClick={() => setLanguage(l)}
-                                    className="lang-btn"
+                                <button key={l} onClick={() => handleLanguageChange(l)} className="lang-btn"
                                     style={{ background: language === l ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.04)', borderColor: language === l ? 'var(--primary)' : 'var(--border)', color: language === l ? 'var(--primary-light)' : 'var(--text-300)' }}>
                                     {l}
                                 </button>
                             ))}
                         </div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-400)', marginTop: '0.4rem' }}>Cross-Lingual NLP · Code-mixed support</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-400)', marginTop: '0.4rem' }}>EN · HI · TA · TE · BN · MR · ML · Code-mixed</div>
                     </div>
 
                     <div className="sidebar-card">
                         <div className="sidebar-card-label"><Calendar size={14} /> Next Session</div>
                         <div className="sidebar-card-value" style={{ color: 'var(--primary-light)' }}>Tomorrow, 3:00 PM</div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Dr. Priya Mehta • 50 min</div>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Dr. Priya Mehta · 50 min</div>
                     </div>
 
                     <div className="sidebar-card">
-                        <div className="sidebar-card-label"><Zap size={14} /> Streak</div>
+                        <div className="sidebar-card-label"><Zap size={14} /> Check-In Streak</div>
                         <div className="sidebar-card-value" style={{ color: 'var(--cyan)' }}>{streak} days 🔥</div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Consistent engagement target: 40+ days</div>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Target: &gt;40% 15-day retention</div>
                     </div>
 
                     <div className="sidebar-card">
-                        <div className="sidebar-card-label"><Heart size={14} /> Mood Today</div>
+                        <div className="sidebar-card-label"><Heart size={14} /> Mood Today (PHQ-9)</div>
                         {todayMood ? (
                             <div className="sidebar-card-value" style={{ color: 'var(--green)' }}>{moodEmojis[todayMood - 1]} {todayMood}/10</div>
                         ) : (
@@ -489,7 +493,7 @@ export default function Patient() {
                     </div>
 
                     <div className="sidebar-card">
-                        <div className="sidebar-card-label"><TrendingUp size={14} /> Dropout Risk</div>
+                        <div className="sidebar-card-label"><TrendingUp size={14} /> SHAP Risk Score</div>
                         <RiskGauge risk={riskScore} />
                     </div>
 
@@ -501,15 +505,17 @@ export default function Patient() {
                     </div>
                 </aside>
 
-                {/* ── CHATBOT ────────────────────────────────── */}
+                {/* ── CHATBOT ──────────────────────────────────────── */}
                 <div className="chatbot-panel">
                     <div className="chatbot-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             <div className="chatbot-avatar-header">🧠</div>
                             <div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>NeuroBridge AI <span style={{ fontSize: '0.72rem', color: 'var(--text-400)', fontFamily: 'var(--font-body)', fontWeight: 400 }}>· {language} mode · CL-PDE NLP</span></div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>
+                                    NeuroBridge AI <span style={{ fontSize: '0.72rem', color: 'var(--text-400)', fontFamily: 'var(--font-body)', fontWeight: 400 }}>· {language} · CL-PDE NLP Active</span>
+                                </div>
                                 <div style={{ fontSize: '0.78rem', color: 'var(--text-300)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                    <span className="dot dot-green" style={{ animation: 'pulse-dot 2s infinite' }} /> Online • CBT · Behavioural Activation · Grounding
+                                    <span className="dot dot-green" style={{ animation: 'pulse-dot 2s infinite' }} /> Online · CBT · Behavioural Activation · Crisis Detection
                                 </div>
                             </div>
                         </div>
@@ -544,38 +550,36 @@ export default function Patient() {
                     </div>
 
                     <div className="chatbot-input-row">
-                        <input
-                            className="chatbot-input"
+                        <input className="chatbot-input"
                             placeholder={`Type a message in ${language}...`}
                             value={inputText}
                             onChange={e => setInputText(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && handleSendText()}
-                        />
+                            onKeyDown={e => e.key === 'Enter' && handleSendText()} />
                         <button className="btn btn-primary btn-icon" onClick={handleSendText}><Send size={16} /></button>
                     </div>
                 </div>
 
-                {/* ── RIGHT PANEL ─────────────────────────────── */}
+                {/* ── RIGHT PANEL ──────────────────────────────────── */}
                 <aside className="patient-right-panel">
                     <div className="right-panel-card">
                         <div className="right-panel-card-title">📈 7-Day Mood Trend</div>
                         <MoodChart moodData={moodData} />
                     </div>
 
-                    {/* Voice Biomarker Check-In — from Report Section 2: Vocal Biomarkers */}
+                    {/* Vocal Biomarker — Report Section: Integration of Vocal Biomarkers */}
                     <VoiceBiomarkerCard onRiskUpdate={(s) => setRiskScore(r => Math.round((r + s) / 2))} />
 
-                    {/* Patient-in-the-Loop — from Report Section: Passive Sensing */}
+                    {/* Patient-in-the-Loop — Report Section: Revolutionizing Sensing */}
                     <PatientInTheLoopPanel />
 
-                    {/* Implementation Intentions — from Report: Behavioural Economics */}
+                    {/* Implementation Intentions — Report Section: Behavioral Economics */}
                     <ImplementationIntentionCard />
 
                     <div className="right-panel-card">
-                        <div className="right-panel-card-title">💡 Today's Coping Tools</div>
+                        <div className="right-panel-card-title">💡 Evidence-Based Coping Tools</div>
                         <div className="coping-tools-list">
                             {[
-                                { icon: '🧘', label: '5-4-3-2-1 Grounding', tag: 'Anxiety · Evidence-based' },
+                                { icon: '🧘', label: '5-4-3-2-1 Grounding', tag: 'Anxiety · Validated' },
                                 { icon: '📝', label: 'CBT Thought Record', tag: 'Cognitive restructuring' },
                                 { icon: '🏃', label: '10-min Walk Challenge', tag: 'Behavioural activation' },
                                 { icon: '💭', label: 'Worry Postponement', tag: 'Rumination · CBT' },
@@ -595,211 +599,4 @@ export default function Patient() {
             </div>
         </div>
     )
-}
-
-
-useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-}, [messages, isTyping])
-
-const handleOption = (option) => {
-    // Check for crisis
-    const currentNode = CONVERSATIONS[messages[messages.length - 1].key]
-    if (currentNode?.isCrisisCheck && option.next === 'crisis') setCrisisVisible(true)
-    // Add user message
-    setMessages(prev => [...prev, { role: 'user', text: option.text }])
-    setIsTyping(true)
-    const delay = 800 + Math.random() * 800
-    setTimeout(() => {
-        const nextNode = CONVERSATIONS[option.next]
-        if (!nextNode) return
-        setIsTyping(false)
-        setMessages(prev => [...prev, { role: 'ai', text: nextNode.message, options: nextNode.options, key: option.next, isCrisis: nextNode.isCrisis }])
-        // Update risk score dynamically
-        if (option.next === 'good' || option.next === 'balanced') setRiskScore(r => Math.max(10, r - 8))
-        if (option.next === 'low' || option.next === 'overwhelmed') setRiskScore(r => Math.min(90, r + 10))
-    }, delay)
-}
-
-const handleMoodSubmit = (score) => {
-    setTodayMood(score)
-    const newData = [...moodData]; newData[6] = score; setMoodData(newData)
-    setRiskScore(score >= 7 ? Math.max(10, riskScore - 12) : score <= 4 ? Math.min(90, riskScore + 15) : riskScore)
-    setStreak(s => s + 1)
-}
-
-const handleSendText = () => {
-    if (!inputText.trim()) return
-    const text = inputText.trim(); setInputText('')
-    setMessages(prev => [...prev, { role: 'user', text }])
-    setIsTyping(true)
-    setTimeout(() => {
-        setIsTyping(false)
-        const responses = [
-            "Thank you for sharing that. I'm listening. Would you like to explore a coping technique together?",
-            "I hear you. Let's slow down and work through this step by step. What feels most urgent right now?",
-            "That makes a lot of sense given what you're going through. Remember: your feelings are valid signals, not facts.",
-        ]
-        setMessages(prev => [...prev, { role: 'ai', text: responses[Math.floor(Math.random() * responses.length)], options: [{ text: "Tell me more", next: 'checkin' }], key: 'checkin' }])
-    }, 1200 + Math.random() * 600)
-}
-
-const moodEmojis = ['😞', '😕', '😐', '🙂', '😁']
-
-return (
-    <div className="patient-page">
-        {/* Crisis Banner */}
-        {crisisVisible && (
-            <div className="crisis-banner">
-                <AlertTriangle size={20} /> In crisis? Call <strong>iCall: 9152987821</strong> or text HOME to 741741.
-                <button onClick={() => setCrisisVisible(false)}>✕</button>
-            </div>
-        )}
-
-        <div className="patient-layout">
-            {/* ── LEFT PANEL ──────────────────────────────────── */}
-            <aside className="patient-sidebar">
-                <div className="patient-profile">
-                    <div className="patient-avatar">MR</div>
-                    <div>
-                        <div className="patient-name">Maya Reddy</div>
-                        <div className="patient-since">In therapy since Jan 2025</div>
-                    </div>
-                </div>
-
-                <div className="sidebar-card">
-                    <div className="sidebar-card-label"><Calendar size={14} /> Next Session</div>
-                    <div className="sidebar-card-value" style={{ color: 'var(--primary-light)' }}>Tomorrow, 3:00 PM</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Dr. Priya Mehta • 50 min</div>
-                </div>
-
-                <div className="sidebar-card">
-                    <div className="sidebar-card-label"><Zap size={14} /> Streak</div>
-                    <div className="sidebar-card-value" style={{ color: 'var(--cyan)' }}>{streak} days 🔥</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>Keep it up!</div>
-                </div>
-
-                <div className="sidebar-card">
-                    <div className="sidebar-card-label"><Heart size={14} /> Mood Today</div>
-                    {todayMood ? (
-                        <div className="sidebar-card-value" style={{ color: 'var(--green)' }}>{moodEmojis[todayMood - 1]} {todayMood}/10</div>
-                    ) : (
-                        <div className="mood-emoji-row">
-                            {moodEmojis.map((e, i) => (
-                                <button key={i} className="mood-emoji-btn" onClick={() => handleMoodSubmit(i * 2 + 1)} title={`Mood ${i * 2 + 1}/10`}>{e}</button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <div className="sidebar-card">
-                    <div className="sidebar-card-label"><TrendingUp size={14} /> Dropout Risk</div>
-                    <RiskGauge risk={riskScore} />
-                </div>
-
-                <div className="crisis-support-card">
-                    <div className="crisis-support-title">🚨 Crisis Support</div>
-                    <a href="tel:9152987821" className="crisis-link">iCall: 9152987821</a>
-                    <a href="tel:18602662345" className="crisis-link">Vandrevala: 1860-2662-345</a>
-                    <div className="crisis-link" style={{ cursor: 'default' }}>Text HOME to 741741</div>
-                </div>
-            </aside>
-
-            {/* ── CENTER: CHATBOT ──────────────────────────────── */}
-            <div className="chatbot-panel">
-                <div className="chatbot-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div className="chatbot-avatar-header">🧠</div>
-                        <div>
-                            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>NeuroBridge AI</div>
-                            <div style={{ fontSize: '0.78rem', color: 'var(--text-300)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                <span className="dot dot-green" style={{ animation: 'pulse-dot 2s infinite' }} /> Online • Evidence-based support
-                            </div>
-                        </div>
-                    </div>
-                    <span className="badge badge-primary">CBT Mode</span>
-                </div>
-
-                <div className="chatbot-messages" ref={chatContainerRef}>
-                    {messages.map((msg, i) => (
-                        <div key={i} className={`chat-msg-wrapper ${msg.role}`}>
-                            {msg.role === 'ai' && <div className="chat-avatar-ai">🧠</div>}
-                            <div className="chat-msg-block">
-                                {msg.isCrisis && <div className="crisis-msg-banner">🚨 Emergency Resources Activated</div>}
-                                <div className={`chat-bubble ${msg.role}`} dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-                                {msg.role === 'ai' && msg.options && i === messages.length - 1 && (
-                                    <div className="chat-options">
-                                        {msg.options.map((o, j) => (
-                                            <button key={j} className="chat-option-btn" onClick={() => handleOption(o)}>{o.text}</button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            {msg.role === 'user' && <div className="chat-avatar-user">MR</div>}
-                        </div>
-                    ))}
-                    {isTyping && (
-                        <div className="chat-msg-wrapper ai">
-                            <div className="chat-avatar-ai">🧠</div>
-                            <div className="typing-indicator-chat"><span /><span /><span /></div>
-                        </div>
-                    )}
-                    <div ref={chatEndRef} />
-                </div>
-
-                <div className="chatbot-input-row">
-                    <input
-                        className="chatbot-input"
-                        placeholder="Type a message..."
-                        value={inputText}
-                        onChange={e => setInputText(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleSendText()}
-                    />
-                    <button className="btn btn-primary btn-icon" onClick={handleSendText}><Send size={16} /></button>
-                </div>
-            </div>
-
-            {/* ── RIGHT PANEL ─────────────────────────────────── */}
-            <aside className="patient-right-panel">
-                <div className="right-panel-card">
-                    <div className="right-panel-card-title">📈 7-Day Mood Trend</div>
-                    <MoodChart moodData={moodData} />
-                </div>
-
-                <div className="right-panel-card">
-                    <div className="right-panel-card-title">💡 Today's Coping Tools</div>
-                    <div className="coping-tools-list">
-                        {[
-                            { icon: '🧘', label: '5-4-3-2-1 Grounding', tag: 'Anxiety' },
-                            { icon: '📝', label: 'CBT Thought Record', tag: 'Depression' },
-                            { icon: '🏃', label: '10-min Walk Challenge', tag: 'Activation' },
-                            { icon: '💭', label: 'Worry Postponement', tag: 'Rumination' },
-                        ].map(t => (
-                            <div key={t.label} className="coping-tool-item">
-                                <span className="coping-tool-icon">{t.icon}</span>
-                                <div>
-                                    <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-200)' }}>{t.label}</div>
-                                    <div style={{ fontSize: '0.72rem', color: 'var(--text-400)' }}>{t.tag}</div>
-                                </div>
-                                <button className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }}>Try</button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="right-panel-card">
-                    <div className="right-panel-card-title">📋 Session Prep</div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-300)', lineHeight: 1.7 }}>
-                        Based on your week, consider discussing:<br />
-                        <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                            <li>Anxiety patterns before work</li>
-                            <li>Fatigue and motivation levels</li>
-                            <li>Social connection quality</li>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </div>
-)
 }

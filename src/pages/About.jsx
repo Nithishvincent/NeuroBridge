@@ -90,19 +90,19 @@ export default function About() {
 
                     {/* Model performance metrics */}
                     <div className="metrics-section reveal">
-                        <h3 className="section-title" style={{ textAlign: 'center', marginBottom: '2rem' }}>Model Performance Targets</h3>
+                        <h3 className="section-title" style={{ textAlign: 'center', marginBottom: '2rem' }}>Target Performance Benchmarks (Report)</h3>
                         <div className="metrics-grid">
                             {[
-                                { label: 'Precision', value: 87, color: 'var(--green)', fill: 'fill-green' },
-                                { label: 'Recall', value: 83, color: 'var(--primary)', fill: 'fill-primary' },
-                                { label: 'F1-Score', value: 85, color: 'var(--cyan)', fill: 'fill-primary' },
-                                { label: 'AUC-ROC', value: 91, color: 'var(--purple)', fill: 'fill-primary' },
-                                { label: 'Sentiment Accuracy', value: 88, color: 'var(--amber)', fill: 'fill-amber' },
+                                { label: 'Precision', value: 89, color: 'var(--green)', fill: 'fill-green' },
+                                { label: 'Recall', value: 86, color: 'var(--primary)', fill: 'fill-primary' },
+                                { label: 'F1-Score', value: 88, color: 'var(--cyan)', fill: 'fill-primary', note: '>0.88 target' },
+                                { label: 'AUC-ROC', value: 89, color: 'var(--purple)', fill: 'fill-primary', note: '>0.85 target' },
+                                { label: 'Sentiment Accuracy', value: 85, color: 'var(--amber)', fill: 'fill-amber' },
                                 { label: 'Crisis Detection', value: 96, color: 'var(--rose)', fill: 'fill-rose' },
                             ].map(m => (
                                 <div key={m.label} className="metric-bar-card card">
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
-                                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{m.label}</span>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>{m.label}{m.note && <span style={{ fontSize: '0.68rem', color: 'var(--text-400)', marginLeft: '0.35rem' }}>({m.note})</span>}</span>
                                         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: m.color }}>{m.value}%</span>
                                     </div>
                                     <div className="progress-bar-container" style={{ height: 10 }}>
@@ -114,6 +114,100 @@ export default function About() {
                     </div>
                 </div>
             </section>
+
+            {/* ── COMPETITIVE LANDSCAPE ──────────────────────── */}
+            <section className="section">
+                <div className="section-wide">
+                    <div className="section-center">
+                        <div className="section-tag">🏆 Market Positioning</div>
+                        <h2 className="section-title">Competitive Landscape</h2>
+                        <p className="section-subtitle">NeuroBridge fills critical gaps that existing platforms leave unaddressed.</p>
+                    </div>
+                    <div className="reveal" style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                                    {['Feature', 'NeuroBridge', 'Spring Health', 'Eleos Health', 'SimplePractice', 'Wysa'].map(h => (
+                                        <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', color: h === 'NeuroBridge' ? 'var(--primary-light)' : 'var(--text-300)', fontFamily: 'var(--font-display)', fontWeight: 700, background: h === 'NeuroBridge' ? 'rgba(99,102,241,0.08)' : 'transparent' }}>{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    ['AI Chatbot (CBT-aligned)', '✅ Full CBT/BA', '⚡ Scheduling', '❌ No', '❌ No', '⚡ Generic'],
+                                    ['Dropout Risk Prediction', '✅ Ensemble ML', '⚡ Basic', '✅ SHAP', '❌ No', '❌ No'],
+                                    ['Vocal Biomarkers', '✅ EMD + Gaussian', '❌ No', '❌ No', '❌ No', '❌ No'],
+                                    ['Working Alliance (WAT)', '✅ 8-week NLP', '❌ No', '❌ No', '❌ No', '❌ No'],
+                                    ['Patient-in-the-Loop', '✅ Annotation UI', '❌ No', '❌ No', '❌ No', '❌ No'],
+                                    ['Multilingual NLP', '✅ EN/HI/TA/TE/BN', '❌ No', '❌ No', '❌ No', '⚡ Limited'],
+                                    ['Federated Learning', '✅ Privacy-preserving', '❌ No', '❌ No', '❌ No', '❌ No'],
+                                    ['Auto-SOAP Notes', '✅ CareOps', '❌ No', '✅ Yes', '⚡ Templates', '❌ No'],
+                                ].map((row, i) => (
+                                    <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                                        {row.map((cell, j) => (
+                                            <td key={j} style={{ padding: '0.75rem 1rem', color: j === 0 ? 'var(--text-200)' : j === 1 ? 'var(--primary-light)' : 'var(--text-400)', background: j === 1 ? 'rgba(99,102,241,0.05)' : 'transparent', fontWeight: j === 0 ? 600 : 400 }}>{cell}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── FEDERATED LEARNING + MULTILINGUAL NLP ──────────── */}
+            <section className="section arch-section">
+                <div className="section-wide">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem', alignItems: 'start' }}>
+                        {/* Federated Learning */}
+                        <div className="reveal">
+                            <div className="section-tag">🔒 Privacy Architecture</div>
+                            <h2 className="section-title" style={{ fontSize: '1.6rem', textAlign: 'left', marginBottom: '1rem' }}>Federated Learning</h2>
+                            <p style={{ color: 'var(--text-300)', lineHeight: 1.7, marginBottom: '1.25rem' }}>NeuroBridge uses <strong style={{ color: 'var(--text-100)' }}>Decentralized AI with Federated Learning (FL)</strong> so patient mental health data never leaves the device. Only encrypted model gradients are shared — not raw data.</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {[
+                                    { icon: '📱', step: '1', label: 'Local Training', desc: 'Patient model trains on-device using personal check-in data' },
+                                    { icon: '🔒', step: '2', label: 'Gradient Encryption', desc: 'Only AES-256 encrypted gradients are shared — not raw data' },
+                                    { icon: '🌐', step: '3', label: 'Global Aggregation', desc: 'Federated averaging updates the global model across all cohorts' },
+                                    { icon: '⚖️', step: '4', label: 'Fairness Audit', desc: 'Bias metrics checked for gender, ethnicity, and language groups' },
+                                ].map(f => (
+                                    <div key={f.step} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', padding: '0.875rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+                                        <span style={{ fontSize: '1.25rem' }}>{f.icon}</span>
+                                        <div>
+                                            <div style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.2rem' }}>{f.label}</div>
+                                            <div style={{ fontSize: '0.78rem', color: 'var(--text-400)' }}>{f.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* Multilingual NLP */}
+                        <div className="reveal">
+                            <div className="section-tag">🌍 Linguistic Equity</div>
+                            <h2 className="section-title" style={{ fontSize: '1.6rem', textAlign: 'left', marginBottom: '1rem' }}>Cross-Lingual NLP</h2>
+                            <p style={{ color: 'var(--text-300)', lineHeight: 1.7, marginBottom: '1.25rem' }}>India's linguistic diversity is a clinical barrier. NeuroBridge uses <strong style={{ color: 'var(--text-100)' }}>Code-mixed Language Processing with Pragmatic Discourse Elements (CL-PDE)</strong> to understand Hinglish, Tamil-English, and code-switched texts without forcing translation.</p>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
+                                {['English', 'Hindi', 'Tamil', 'Telugu', 'Bengali', 'Hinglish'].map(lang => (
+                                    <div key={lang} style={{ padding: '0.5rem 0.75rem', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 'var(--radius-md)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-light)', textAlign: 'center' }}>{lang}</div>
+                                ))}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                {[
+                                    { label: 'LIWC-22 Psycholinguistics', desc: 'Sentiment in native scripts' },
+                                    { label: 'Code-Mixed Corpus', desc: '50K+ annotated Hinglish/Tamil-EN samples' },
+                                    { label: 'Multilingual BERT', desc: 'Fine-tuned on depression corpus' },
+                                ].map(f => (
+                                    <div key={f.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.625rem 0.875rem', background: 'rgba(34,211,238,0.05)', borderRadius: 'var(--radius-md)', fontSize: '0.78rem' }}>
+                                        <span style={{ color: 'var(--text-200)', fontWeight: 600 }}>{f.label}</span>
+                                        <span style={{ color: 'var(--text-400)' }}>{f.desc}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
 
             {/* ── ETHICS ───────────────────────────────────────── */}
             <section className="section" style={{ background: 'var(--bg-900)' }}>

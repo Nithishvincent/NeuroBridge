@@ -27,10 +27,21 @@ export default function Footer() {
                 <div className="footer-col">
                     <h4>Features</h4>
                     <ul>
-                        <li><a href="#">AI Companion</a></li>
-                        <li><a href="#">Mood Tracking</a></li>
-                        <li><a href="#">Risk Prediction</a></li>
-                        <li><a href="#">Crisis Support</a></li>
+                        <li><a href="#">AI Companion (CBT)</a></li>
+                        <li><a href="#">Multilingual NLP</a></li>
+                        <li><a href="#">Dropout Risk SHAP</a></li>
+                        <li><a href="#">Federated Learning</a></li>
+                        <li><a href="#">Voice Biomarkers</a></li>
+                    </ul>
+                </div>
+
+                <div className="footer-col">
+                    <h4>🆘 India Crisis Lines</h4>
+                    <ul>
+                        <li><a href="tel:9152987821">iCall: 9152987821</a></li>
+                        <li><a href="tel:18602662345">Vandrevala: 1860-2662-345</a></li>
+                        <li><a href="tel:08046110007">NIMHANS: 080-46110007</a></li>
+                        <li><a href="#">Text HOME to 741741</a></li>
                     </ul>
                 </div>
 
@@ -46,7 +57,7 @@ export default function Footer() {
             </div>
 
             <div className="footer-bottom">
-                <span>© 2025 NeuroBridge. For demonstration purposes. Not a replacement for professional care.</span>
+                <span>© 2026 NeuroBridge · Built for India · Demo only. Not a replacement for professional care.</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="dot dot-green" style={{ animation: 'pulse-dot 2s infinite' }}></span>
                     System operational

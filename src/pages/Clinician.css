@@ -375,10 +375,6 @@
     gap: 1.25rem;
 }
 
-.heatmap-card {}
-
-.ai-insights-card {}
-
 .ai-insight-block {
     padding: 1rem;
     border-radius: var(--radius-md);
