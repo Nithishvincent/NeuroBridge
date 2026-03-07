@@ -1,0 +1,244 @@
+.about-page {}
+
+.about-hero {
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+}
+
+.about-hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.about-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.about-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-300);
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.75;
+}
+
+.section-tag-wrap {
+    margin-bottom: 2.5rem;
+}
+
+.research-grid {
+    margin-top: 2.5rem;
+}
+
+.research-card {
+    padding: 1.75rem;
+}
+
+.research-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Architecture ────────────────────────────────────────── */
+.arch-section {
+    background: linear-gradient(180deg, var(--bg-700), var(--bg-800));
+}
+
+.arch-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+    position: relative;
+}
+
+.arch-flow::before {
+    content: '';
+    position: absolute;
+    top: 2.5rem;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--primary), var(--cyan));
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.arch-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 1;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.arch-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+.arch-step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.arch-step-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 0 16px var(--primary-glow);
+}
+
+.arch-step-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--primary-light);
+    text-transform: uppercase;
+}
+
+.arch-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.arch-list li {
+    font-size: 0.8rem;
+    color: var(--text-300);
+    padding-left: 1rem;
+    position: relative;
+}
+
+.arch-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--primary-light);
+}
+
+/* ── Metrics ─────────────────────────────────────────────── */
+.metrics-section {
+    margin-top: 3rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+.metric-bar-card {
+    padding: 1.25rem;
+}
+
+/* ── Ethics Pillars ──────────────────────────────────────── */
+.ethics-pillars {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+}
+
+.ethics-pillar {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+}
+
+.ethics-pillar-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Eval Grid ───────────────────────────────────────────── */
+.eval-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+}
+
+.eval-card {
+    padding: 1.75rem;
+}
+
+/* ── Reveal ──────────────────────────────────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media(max-width:1000px) {
+    .arch-flow {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .arch-flow::before {
+        display: none;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:768px) {
+    .ethics-pillars {
+        grid-template-columns: 1fr;
+    }
+
+    .eval-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media(max-width:500px) {
+    .eval-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .arch-flow {
+        grid-template-columns: 1fr;
+    }
+}
