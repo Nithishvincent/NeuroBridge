@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Send, AlertTriangle, Heart, Zap, Calendar, TrendingUp, Mic, MicOff, Globe, Activity } from 'lucide-react'
+import { TRANSLATIONS } from '../utils/translations'
 import './Patient.css'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
@@ -13,6 +14,53 @@ const LANG_GREETINGS = {
     TA: "வணக்கம்! நான் உங்கள் NeuroBridge துணை. இன்று நீங்கள் எப்படி உணர்கிறீர்கள்? 😊",
     TE: "నమస్కారం! నేను మీ NeuroBridge సహాయకుడిని. ఈరోజు మీరు ఎలా అనుభవిస్తున్నారు? 😊",
     BN: "নমস্কার! আমি আপনার NeuroBridge সঙ্গী। আজ আপনি কেমন অনুভব করছেন? 😊",
+    MR: "नमस्कार! मी तुमचा NeuroBridge साथीदार आहे. आज तुम्हाला कसे वाटत आहे? 😊",
+    ML: "നമസ്കാരം! ഞാൻ നിങ്ങളുടെ NeuroBridge സഹായിയാണ്. ഇന്ന് നിങ്ങൾക്ക് എങ്ങനെ തോന്നുന്നു? 😊",
+}
+
+const LANG_OPTIONS = {
+    EN: [
+        { text: "😊 Pretty good, actually!", next: 'good' },
+        { text: "😐 Okay, nothing special", next: 'neutral' },
+        { text: "😞 Not great today", next: 'low' },
+        { text: "😰 I'm really struggling", next: 'crisis_check' },
+    ],
+    HI: [
+        { text: "😊 बहुत अच्छा, वास्तव में!", next: 'good' },
+        { text: "😐 ठीक है, कुछ खास नहीं", next: 'neutral' },
+        { text: "😞 आज अच्छा नहीं लग रहा", next: 'low' },
+        { text: "😰 मुझे वास्तव में संघर्ष करना पड़ रहा है", next: 'crisis_check' },
+    ],
+    TA: [
+        { text: "😊 மிகவும் நன்றாக இருக்கிறது!", next: 'good' },
+        { text: "😐 பரவாயில்லை, சிறப்பொன்றும் இல்லை", next: 'neutral' },
+        { text: "😞 இன்று நன்றாக இல்லை", next: 'low' },
+        { text: "😰 நான் மிகவும் சிரமப்படுகிறேன்", next: 'crisis_check' },
+    ],
+    TE: [
+        { text: "😊 చాలా బాగుంది!", next: 'good' },
+        { text: "😐 పర్వాలేదు, ప్రత్యేకంగా ఏమీ లేదు", next: 'neutral' },
+        { text: "😞 ఈరోజు బాగా లేదు", next: 'low' },
+        { text: "😰 నేను నిజంగా ఇబ్బంది పడుతున్నాను", next: 'crisis_check' },
+    ],
+    BN: [
+        { text: "😊 বেশ ভালো!", next: 'good' },
+        { text: "😐 ঠিক আছে, বিশেষ কিছু না", next: 'neutral' },
+        { text: "😞 আজ ভালো লাগছে না", next: 'low' },
+        { text: "😰 আমি সত্যিই কষ্ট পাচ্ছি", next: 'crisis_check' },
+    ],
+    MR: [
+        { text: "😊 खूप छान!", next: 'good' },
+        { text: "😐 ठीक आहे, काही विशेष नाही", next: 'neutral' },
+        { text: "😞 आज छान वाटत नाहीये", next: 'low' },
+        { text: "😰 मला खरोखरच त्रास होत आहे", next: 'crisis_check' },
+    ],
+    ML: [
+        { text: "😊 വളരെ നല്ലത്!", next: 'good' },
+        { text: "😐 കുഴപ്പമില്ല, പ്രത്യേകിച്ച് ഒന്നുമില്ല", next: 'neutral' },
+        { text: "😞 ഇന്ന് അത്ര നല്ലതല്ല", next: 'low' },
+        { text: "😰 ഞാൻ ശരിക്കും ബുദ്ധിമുട്ടുന്നു", next: 'crisis_check' },
+    ]
 }
 
 const CONVERSATIONS = {
@@ -132,6 +180,22 @@ const CONVERSATIONS = {
         message: "I've noted that for your session. 📋 You've done something meaningful today by checking in. I'll be here tomorrow. Remember: one day at a time. 💙",
         options: [{ text: "Start over", next: 'start' }]
     }
+}
+
+const getLocalizedNode = (key, lang) => {
+    const defaultNode = CONVERSATIONS[key];
+    if (!defaultNode) return null;
+    if (lang === 'EN' || !TRANSLATIONS[lang] || !TRANSLATIONS[lang][key]) return defaultNode;
+
+    const loc = TRANSLATIONS[lang][key];
+    return {
+        ...defaultNode,
+        message: loc.message || defaultNode.message,
+        options: defaultNode.options?.map((opt, i) => ({
+            ...opt,
+            text: loc.options[i] || opt.text
+        }))
+    };
 }
 
 const MOOD_DATA_INIT = [5, 6, 4, 7, 6, 7, null]
@@ -368,7 +432,7 @@ function ImplementationIntentionCard() {
 
 /* ── Main Component ───────────────────────────────────────── */
 export default function Patient() {
-    const [messages, setMessages] = useState([{ role: 'ai', text: CONVERSATIONS.start.message, options: CONVERSATIONS.start.options, key: 'start' }])
+    const [messages, setMessages] = useState([{ role: 'ai', text: LANG_GREETINGS.EN, options: LANG_OPTIONS.EN, key: 'start' }])
     const [isTyping, setIsTyping] = useState(false)
     const [moodData, setMoodData] = useState(MOOD_DATA_INIT)
     const [todayMood, setTodayMood] = useState(null)
@@ -382,7 +446,7 @@ export default function Patient() {
 
     const handleLanguageChange = (lang) => {
         setLanguage(lang)
-        setMessages([{ role: 'ai', text: LANG_GREETINGS[lang] || LANG_GREETINGS.EN, options: CONVERSATIONS.start.options, key: 'start' }])
+        setMessages([{ role: 'ai', text: LANG_GREETINGS[lang] || LANG_GREETINGS.EN, options: LANG_OPTIONS[lang] || LANG_OPTIONS.EN, key: 'start' }])
     }
 
     useEffect(() => {
@@ -398,7 +462,10 @@ export default function Patient() {
         setIsTyping(true)
         const delay = 800 + Math.random() * 800
         setTimeout(() => {
-            const nextNode = CONVERSATIONS[option.next]
+            const nextNode = option.next === 'start'
+                ? { ...CONVERSATIONS.start, message: LANG_GREETINGS[language] || LANG_GREETINGS.EN, options: LANG_OPTIONS[language] || LANG_OPTIONS.EN }
+                : getLocalizedNode(option.next, language)
+
             if (!nextNode) return
             setIsTyping(false)
             setMessages(prev => [...prev, { role: 'ai', text: nextNode.message, options: nextNode.options, key: option.next, isCrisis: nextNode.isCrisis }])
